@@ -1,0 +1,89 @@
+<div class="container page">
+  <h1 class="page-title">Checkout</h1>
+
+  @if (cart.items().length === 0) {
+    <div class="state-box">
+      <i class="bi bi-bag"></i>
+      <h3>Nothing to check out</h3>
+      <p>Add some products to your cart first.</p>
+      <a routerLink="/products" class="btn-brand">Browse products</a>
+    </div>
+  } @else {
+    <div class="cart-layout">
+      <form class="card-box" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <h5>Delivery address</h5>
+
+        <div class="mb-3">
+          <label class="form-label" for="details">Address</label>
+          <textarea id="details" rows="3" class="form-control" formControlName="details" [class.is-invalid]="invalid('details')" placeholder="Street, building, apartment"></textarea>
+          @if (invalid('details')) {
+            <div class="invalid-feedback">Please enter your full address.</div>
+          }
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label" for="city">City</label>
+            <input id="city" type="text" class="form-control" formControlName="city" [class.is-invalid]="invalid('city')" />
+            @if (invalid('city')) {
+              <div class="invalid-feedback">City is required.</div>
+            }
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="phone">Phone</label>
+            <input id="phone" type="tel" class="form-control" formControlName="phone" [class.is-invalid]="invalid('phone')" placeholder="01012345678" />
+            @if (invalid('phone')) {
+              <div class="invalid-feedback">Enter a valid Egyptian mobile number.</div>
+            }
+          </div>
+        </div>
+
+        <h5 class="mt-4">Payment method</h5>
+        <div class="pay-options">
+          <button type="button" [class.active]="payment() === 'cash'" (click)="payment.set('cash')">
+            <i class="bi bi-cash-coin"></i>
+            <span><strong>Cash on delivery</strong><small>Pay when your order arrives</small></span>
+          </button>
+          <button type="button" [class.active]="payment() === 'card'" (click)="payment.set('card')">
+            <i class="bi bi-credit-card-2-front"></i>
+            <span><strong>Credit / debit card</strong><small>Secure online payment</small></span>
+          </button>
+        </div>
+
+        @if (error()) {
+          <div class="alert alert-danger mt-3 mb-0">{{ error() }}</div>
+        }
+
+        <button type="submit" class="btn-brand w-100 mt-4" [disabled]="submitting()">
+          @if (submitting()) {
+            <span class="spinner-border spinner-border-sm"></span>
+          } @else {
+            {{ payment() === 'cash' ? 'Place order' : 'Continue to payment' }}
+          }
+        </button>
+      </form>
+
+      <aside class="summary">
+        <h5>Your order</h5>
+        @for (item of cart.items(); track item._id) {
+          <div class="mini-row">
+            <img [src]="item.product.imageCover" [alt]="item.product.title" />
+            <div>
+              <span class="mini-title">{{ item.product.title }}</span>
+              <small class="text-muted">Qty {{ item.count }}</small>
+            </div>
+            <strong>{{ item.price * item.count | currency: 'EGP' : 'code' : '1.0-0' }}</strong>
+          </div>
+        }
+        <div class="sum-row">
+          <span>Shipping</span>
+          <span class="text-success">Free</span>
+        </div>
+        <div class="sum-row total">
+          <span>Total</span>
+          <span>{{ cart.total() | currency: 'EGP' : 'code' : '1.0-0' }}</span>
+        </div>
+      </aside>
+    </div>
+  }
+</div>

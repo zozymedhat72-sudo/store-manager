@@ -1,0 +1,50 @@
+<article class="p-card">
+  @if (hasDiscount()) {
+    <span class="p-off">-{{ discount() }}%</span>
+  }
+  <button
+    type="button"
+    class="p-wish"
+    [class.active]="wishlist.has(product()._id)"
+    (click)="wishlist.toggle(product()._id)"
+    aria-label="Add to wishlist"
+  >
+    <i [class]="wishlist.has(product()._id) ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+  </button>
+
+  <a class="p-img" [routerLink]="['/products', product()._id]">
+    <img [src]="product().imageCover" [alt]="product().title" loading="lazy" />
+  </a>
+
+  <div class="p-body">
+    <span class="p-brand">{{ product().brand?.name || product().category?.name }}</span>
+    <a class="p-title" [routerLink]="['/products', product()._id]" [title]="product().title">
+      {{ product().title }}
+    </a>
+    <div class="p-rate">
+      <app-stars [rating]="product().ratingsAverage" />
+      <small>{{ product().ratingsAverage }} ({{ product().ratingsQuantity }})</small>
+    </div>
+    <div class="p-price">
+      @if (hasDiscount()) {
+        <strong>{{ product().priceAfterDiscount | currency: 'EGP' : 'code' : '1.0-0' }}</strong>
+        <s>{{ product().price | currency: 'EGP' : 'code' : '1.0-0' }}</s>
+      } @else {
+        <strong>{{ product().price | currency: 'EGP' : 'code' : '1.0-0' }}</strong>
+      }
+    </div>
+    <button
+      type="button"
+      class="btn-add"
+      [disabled]="cart.busy() === product()._id || product().quantity === 0"
+      (click)="cart.add(product()._id)"
+    >
+      @if (cart.busy() === product()._id) {
+        <span class="spinner-border spinner-border-sm"></span>
+      } @else {
+        <i class="bi bi-bag-plus"></i>
+        {{ product().quantity === 0 ? 'Out of stock' : 'Add to cart' }}
+      }
+    </button>
+  </div>
+</article>

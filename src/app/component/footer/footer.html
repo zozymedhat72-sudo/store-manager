@@ -1,0 +1,33 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="row g-4 py-5">
+      <div class="col-12 col-lg-4">
+        <a routerLink="/" class="logo light">{{ appName }}<span>.</span></a>
+        <p class="mt-3 mb-0">Everything you need in one place, delivered to your door. Fashion, electronics, home and much more.</p>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6>Shop</h6>
+        <a routerLink="/products">All products</a>
+        <a routerLink="/products" [queryParams]="{ sort: '-sold' }">Best sellers</a>
+        <a routerLink="/products" [queryParams]="{ sort: '-ratingsAverage' }">Top rated</a>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6>Account</h6>
+        <a routerLink="/login">Sign in</a>
+        <a routerLink="/register">Create account</a>
+        <a routerLink="/orders">My orders</a>
+        <a routerLink="/wishlist">Wishlist</a>
+      </div>
+      <div class="col-12 col-lg-4">
+        <h6>We accept</h6>
+        <div class="pay-icons">
+          <i class="bi bi-credit-card-2-front"></i>
+          <i class="bi bi-cash-coin"></i>
+          <i class="bi bi-shield-check"></i>
+        </div>
+        <p class="mt-3 mb-0">Pay by card or cash on delivery.</p>
+      </div>
+    </div>
+    <div class="foot-bottom">&copy; {{ year }} {{ appName }}. All rights reserved.</div>
+  </div>
+</footer>

@@ -1,0 +1,24 @@
+<div class="container page">
+  <h1 class="page-title">My wishlist</h1>
+
+  @if (wishlist.loading() && wishlist.items().length === 0) {
+    <div class="p-grid">
+      @for (n of [1, 2, 3, 4]; track n) {
+        <div class="p-card skeleton-card"></div>
+      }
+    </div>
+  } @else if (wishlist.items().length === 0) {
+    <div class="state-box">
+      <i class="bi bi-heart"></i>
+      <h3>Your wishlist is empty</h3>
+      <p>Tap the heart on any product to save it for later.</p>
+      <a routerLink="/products" class="btn-brand">Discover products</a>
+    </div>
+  } @else {
+    <div class="p-grid">
+      @for (p of wishlist.items(); track p._id) {
+        <app-product-card [product]="p" />
+      }
+    </div>
+  }
+</div>

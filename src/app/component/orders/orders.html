@@ -1,0 +1,62 @@
+<div class="container page">
+  <h1 class="page-title">My orders</h1>
+
+  @if (loading()) {
+    <div class="skeleton-box mb-3" style="height: 150px"></div>
+    <div class="skeleton-box" style="height: 150px"></div>
+  } @else if (error()) {
+    <div class="state-box">
+      <i class="bi bi-wifi-off"></i>
+      <h3>We could not load your orders</h3>
+      <button type="button" class="btn-brand" (click)="load()">Try again</button>
+    </div>
+  } @else if (orders().length === 0) {
+    <div class="state-box">
+      <i class="bi bi-box-seam"></i>
+      <h3>No orders yet</h3>
+      <p>When you place an order it will show up here.</p>
+      <a routerLink="/products" class="btn-brand">Start shopping</a>
+    </div>
+  } @else {
+    @for (o of orders(); track o._id) {
+      <article class="order-card">
+        <header>
+          <div>
+            <small class="text-muted">Order</small>
+            <strong>#{{ o.id }}</strong>
+          </div>
+          <div>
+            <small class="text-muted">Placed on</small>
+            <strong>{{ o.createdAt | date: 'mediumDate' }}</strong>
+          </div>
+          <div>
+            <small class="text-muted">Total</small>
+            <strong>{{ o.totalOrderPrice | currency: 'EGP' : 'code' : '1.0-0' }}</strong>
+          </div>
+          <div class="badges">
+            <span class="status" [class.ok]="o.isPaid">{{ o.isPaid ? 'Paid' : o.paymentMethodType === 'cash' ? 'Pay on delivery' : 'Unpaid' }}</span>
+            <span class="status" [class.ok]="o.isDelivered">{{ o.isDelivered ? 'Delivered' : 'On its way' }}</span>
+          </div>
+        </header>
+        <div class="order-items">
+          @for (i of o.cartItems; track i._id) {
+            <div class="mini-row">
+              <img [src]="i.product?.imageCover" [alt]="i.product?.title" />
+              <div>
+                <a class="mini-title" [routerLink]="['/products', i.product?._id]">{{ i.product?.title }}</a>
+                <small class="text-muted">Qty {{ i.count }}</small>
+              </div>
+              <strong>{{ i.price * i.count | currency: 'EGP' : 'code' : '1.0-0' }}</strong>
+            </div>
+          }
+        </div>
+        @if (o.shippingAddress) {
+          <footer>
+            <i class="bi bi-geo-alt"></i>
+            {{ o.shippingAddress.details }}, {{ o.shippingAddress.city }} &middot; {{ o.shippingAddress.phone }}
+          </footer>
+        }
+      </article>
+    }
+  }
+</div>

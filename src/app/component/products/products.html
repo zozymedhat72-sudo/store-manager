@@ -1,0 +1,108 @@
+<div class="container page">
+  <div class="list-head">
+    <div>
+      <h1 class="page-title">{{ title() }}</h1>
+      <small class="text-muted">Page {{ page() }} of {{ pages() }}</small>
+    </div>
+    <div class="list-tools">
+      <button type="button" class="btn-line d-lg-none" (click)="filtersOpen.set(!filtersOpen())">
+        <i class="bi bi-sliders"></i> Filters
+      </button>
+      <label class="sort">
+        <span>Sort by</span>
+        <select [value]="sort()" (change)="setParam('sort', $any($event.target).value)">
+          @for (o of sortOptions; track o.value) {
+            <option [value]="o.value" [selected]="o.value === sort()">{{ o.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="list-layout">
+    <aside class="filters" [class.open]="filtersOpen()">
+      <div class="filter-box">
+        <div class="filter-title">
+          <h6>Category</h6>
+          @if (hasFilters()) {
+            <button type="button" class="link-btn" (click)="clearFilters()">Clear all</button>
+          }
+        </div>
+        <ul class="filter-list">
+          <li>
+            <button type="button" [class.active]="!category()" (click)="setParam('category', null)">All categories</button>
+          </li>
+          @for (c of categories(); track c._id) {
+            <li>
+              <button type="button" [class.active]="category() === c._id" (click)="setParam('category', c._id)">{{ c.name }}</button>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="filter-box">
+        <h6>Brand</h6>
+        <select class="form-select" [value]="brand()" (change)="setParam('brand', $any($event.target).value)">
+          <option value="" [selected]="!brand()">All brands</option>
+          @for (b of brands(); track b._id) {
+            <option [value]="b._id" [selected]="brand() === b._id">{{ b.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-box">
+        <h6>Price (EGP)</h6>
+        <div class="price-inputs">
+          <input #min type="number" min="0" class="form-control" placeholder="Min" [value]="minPrice()" />
+          <span>-</span>
+          <input #max type="number" min="0" class="form-control" placeholder="Max" [value]="maxPrice()" />
+        </div>
+        <button type="button" class="btn-ink w-100 mt-2" (click)="applyPrice(min.value, max.value)">Apply</button>
+      </div>
+    </aside>
+
+    <section class="results">
+      @if (error()) {
+        <div class="state-box">
+          <i class="bi bi-wifi-off"></i>
+          <h3>We could not load the products</h3>
+          <p>Check your connection and try again.</p>
+          <button type="button" class="btn-brand" (click)="setParam('page', null)">Try again</button>
+        </div>
+      } @else if (loading()) {
+        <div class="p-grid">
+          @for (n of [1, 2, 3, 4, 5, 6, 7, 8]; track n) {
+            <div class="p-card skeleton-card"></div>
+          }
+        </div>
+      } @else if (items().length === 0) {
+        <div class="state-box">
+          <i class="bi bi-search"></i>
+          <h3>No products found</h3>
+          <p>Try a different search or remove some filters.</p>
+          <button type="button" class="btn-brand" (click)="clearFilters()">Clear filters</button>
+        </div>
+      } @else {
+        <div class="p-grid">
+          @for (p of items(); track p._id) {
+            <app-product-card [product]="p" />
+          }
+        </div>
+
+        @if (pages() > 1) {
+          <nav class="pager" aria-label="Pages">
+            <button type="button" [disabled]="page() === 1" (click)="goToPage(page() - 1)" aria-label="Previous page">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            @for (n of pageList(); track n) {
+              <button type="button" [class.active]="n === page()" (click)="goToPage(n)">{{ n }}</button>
+            }
+            <button type="button" [disabled]="page() === pages()" (click)="goToPage(page() + 1)" aria-label="Next page">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </nav>
+        }
+      }
+    </section>
+  </div>
+</div>

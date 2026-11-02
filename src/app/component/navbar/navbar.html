@@ -1,0 +1,65 @@
+<header class="site-header">
+  <div class="top-bar">
+    <div class="container top-bar-inner">
+      <a routerLink="/" class="logo">{{ appName }}<span>.</span></a>
+
+      <form class="search" (submit)="search($event, q.value)">
+        <input #q type="search" name="q" placeholder="What are you looking for?" autocomplete="off" />
+        <button type="submit" aria-label="Search"><i class="bi bi-search"></i></button>
+      </form>
+
+      <nav class="actions">
+        @if (auth.isLoggedIn()) {
+          <div class="account">
+            <button type="button" class="action" (click)="menuOpen.set(!menuOpen())">
+              <i class="bi bi-person"></i>
+              <span class="d-none d-md-inline">Hi, {{ auth.firstName() }}</span>
+              <i class="bi bi-chevron-down small d-none d-md-inline"></i>
+            </button>
+            @if (menuOpen()) {
+              <div class="menu">
+                <div class="menu-head">
+                  <strong>{{ auth.user()?.name }}</strong>
+                  <small>{{ auth.user()?.email }}</small>
+                </div>
+                <a routerLink="/orders"><i class="bi bi-box-seam"></i> My orders</a>
+                <a routerLink="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+                <a routerLink="/cart"><i class="bi bi-bag"></i> Cart</a>
+                <button type="button" (click)="logout()"><i class="bi bi-box-arrow-right"></i> Sign out</button>
+              </div>
+            }
+          </div>
+        } @else {
+          <a routerLink="/login" class="action">
+            <i class="bi bi-person"></i>
+            <span class="d-none d-md-inline">Sign in</span>
+          </a>
+        }
+
+        <a routerLink="/wishlist" class="action" aria-label="Wishlist">
+          <i class="bi bi-heart"></i>
+          @if (wishlist.count() > 0) {
+            <span class="count">{{ wishlist.count() }}</span>
+          }
+        </a>
+
+        <a routerLink="/cart" class="action" aria-label="Cart">
+          <i class="bi bi-bag"></i>
+          <span class="d-none d-md-inline">Cart</span>
+          @if (cart.count() > 0) {
+            <span class="count">{{ cart.count() }}</span>
+          }
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="cat-bar">
+    <div class="container cat-bar-inner">
+      <a routerLink="/products" routerLinkActive="current" [routerLinkActiveOptions]="{ exact: true }">All products</a>
+      @for (c of categories(); track c._id) {
+        <a [routerLink]="['/products']" [queryParams]="{ category: c._id }">{{ c.name }}</a>
+      }
+    </div>
+  </div>
+</header>

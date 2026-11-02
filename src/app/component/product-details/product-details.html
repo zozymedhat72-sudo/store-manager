@@ -1,0 +1,115 @@
+<div class="container page">
+  @if (loading()) {
+    <div class="detail-grid">
+      <div class="skeleton-box" style="height: 420px"></div>
+      <div>
+        <div class="skeleton-box mb-3" style="height: 28px; width: 70%"></div>
+        <div class="skeleton-box mb-3" style="height: 18px; width: 40%"></div>
+        <div class="skeleton-box mb-3" style="height: 40px; width: 30%"></div>
+        <div class="skeleton-box" style="height: 120px"></div>
+      </div>
+    </div>
+  } @else if (error() || !product()) {
+    <div class="state-box">
+      <i class="bi bi-exclamation-circle"></i>
+      <h3>Product not found</h3>
+      <p>This product may have been removed or the link is wrong.</p>
+      <a routerLink="/products" class="btn-brand">Back to products</a>
+    </div>
+  } @else {
+    @let p = product()!;
+
+    <nav class="crumbs">
+      <a routerLink="/">Home</a>
+      <i class="bi bi-chevron-right"></i>
+      <a routerLink="/products">Products</a>
+      @if (p.category) {
+        <i class="bi bi-chevron-right"></i>
+        <a routerLink="/products" [queryParams]="{ category: p.category._id }">{{ p.category.name }}</a>
+      }
+    </nav>
+
+    <div class="detail-grid">
+      <div class="gallery">
+        <div class="gallery-main">
+          <img [src]="activeImage()" [alt]="p.title" />
+        </div>
+        @if (gallery().length > 1) {
+          <div class="gallery-thumbs">
+            @for (img of gallery(); track img) {
+              <button type="button" [class.active]="img === activeImage()" (click)="activeImage.set(img)">
+                <img [src]="img" [alt]="p.title" loading="lazy" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="info">
+        @if (p.brand) {
+          <a class="info-brand" routerLink="/products" [queryParams]="{ brand: p.brand._id }">{{ p.brand.name }}</a>
+        }
+        <h1>{{ p.title }}</h1>
+
+        <div class="p-rate mb-3">
+          <app-stars [rating]="p.ratingsAverage" />
+          <small>{{ p.ratingsAverage }} ({{ p.ratingsQuantity }} reviews) &middot; {{ p.sold }} sold</small>
+        </div>
+
+        <div class="info-price">
+          <strong>{{ finalPrice() | currency: 'EGP' : 'code' : '1.0-0' }}</strong>
+          @if (hasDiscount()) {
+            <s>{{ p.price | currency: 'EGP' : 'code' : '1.0-0' }}</s>
+            <span class="tag-off">Save {{ discount() }}%</span>
+          }
+        </div>
+        <small class="text-muted">Inclusive of VAT</small>
+
+        <div class="stock" [class.out]="p.quantity === 0">
+          <i [class]="p.quantity === 0 ? 'bi bi-x-circle' : 'bi bi-check-circle'"></i>
+          {{ p.quantity === 0 ? 'Out of stock' : p.quantity <= 10 ? 'Only ' + p.quantity + ' left' : 'In stock' }}
+        </div>
+
+        <div class="buy-row">
+          <div class="qty">
+            <button type="button" (click)="changeQty(-1)" [disabled]="qty() <= 1" aria-label="Decrease"><i class="bi bi-dash"></i></button>
+            <span>{{ qty() }}</span>
+            <button type="button" (click)="changeQty(1)" [disabled]="qty() >= p.quantity" aria-label="Increase"><i class="bi bi-plus"></i></button>
+          </div>
+          <button type="button" class="btn-brand grow" [disabled]="p.quantity === 0 || cart.busy() === p._id" (click)="addToCart()">
+            @if (cart.busy() === p._id) {
+              <span class="spinner-border spinner-border-sm"></span>
+            } @else {
+              <i class="bi bi-bag-plus"></i> Add to cart
+            }
+          </button>
+          <button type="button" class="btn-heart" [class.active]="wishlist.has(p._id)" (click)="wishlist.toggle(p._id)" aria-label="Wishlist">
+            <i [class]="wishlist.has(p._id) ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+          </button>
+        </div>
+
+        <ul class="assure">
+          <li><i class="bi bi-truck"></i> Delivery in 2-4 days</li>
+          <li><i class="bi bi-arrow-repeat"></i> 14-day free returns</li>
+          <li><i class="bi bi-shield-check"></i> Secure checkout</li>
+        </ul>
+
+        <h6 class="mt-4">About this item</h6>
+        <p class="desc">{{ p.description }}</p>
+      </div>
+    </div>
+
+    @if (related().length) {
+      <section class="block">
+        <div class="block-head">
+          <h2>You may also like</h2>
+        </div>
+        <div class="p-grid">
+          @for (r of related(); track r._id) {
+            <app-product-card [product]="r" />
+          }
+        </div>
+      </section>
+    }
+  }
+</div>

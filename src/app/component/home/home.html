@@ -1,0 +1,119 @@
+<div class="container page">
+  <section class="hero">
+    @for (s of slides; track s.title; let i = $index) {
+      <div class="slide" [class]="'slide ' + s.theme" [class.active]="i === current()">
+        <div class="slide-copy">
+          <h1>{{ s.title }}</h1>
+          <p>{{ s.text }}</p>
+          <a routerLink="/products" [queryParams]="{ sort: s.link.sort || null }" class="btn-brand">
+            {{ s.cta }} <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    }
+    <button type="button" class="hero-nav prev" (click)="prev()" aria-label="Previous"><i class="bi bi-chevron-left"></i></button>
+    <button type="button" class="hero-nav next" (click)="next()" aria-label="Next"><i class="bi bi-chevron-right"></i></button>
+    <div class="hero-dots">
+      @for (s of slides; track s.title; let i = $index) {
+        <button type="button" [class.active]="i === current()" (click)="go(i)" [attr.aria-label]="'Slide ' + (i + 1)"></button>
+      }
+    </div>
+  </section>
+
+  <section class="perks">
+    @for (p of perks; track p.title) {
+      <div class="perk">
+        <i [class]="'bi ' + p.icon"></i>
+        <div>
+          <strong>{{ p.title }}</strong>
+          <small>{{ p.text }}</small>
+        </div>
+      </div>
+    }
+  </section>
+
+  @if (categories().length) {
+    <section class="block">
+      <div class="block-head">
+        <h2>Shop by category</h2>
+        <a routerLink="/products">View all</a>
+      </div>
+      <div class="cat-row">
+        @for (c of categories(); track c._id) {
+          <a class="cat-tile" [routerLink]="['/products']" [queryParams]="{ category: c._id }">
+            <img [src]="c.image" [alt]="c.name" loading="lazy" />
+            <span>{{ c.name }}</span>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (error()) {
+    <div class="state-box">
+      <i class="bi bi-wifi-off"></i>
+      <h3>We could not load the products</h3>
+      <p>Check your connection and try again.</p>
+      <button type="button" class="btn-brand" (click)="load()">Try again</button>
+    </div>
+  } @else {
+    <section class="block">
+      <div class="block-head">
+        <h2>Best sellers</h2>
+        <a routerLink="/products" [queryParams]="{ sort: '-sold' }">See more</a>
+      </div>
+      <div class="p-grid">
+        @if (loading()) {
+          @for (n of [1, 2, 3, 4, 5]; track n) {
+            <div class="p-card skeleton-card"></div>
+          }
+        } @else {
+          @for (p of bestSellers(); track p._id) {
+            <app-product-card [product]="p" />
+          }
+        }
+      </div>
+    </section>
+
+    <section class="promo">
+      <div>
+        <h3>Join today and get free delivery</h3>
+        <p>Create an account to save your favourites, track orders and check out faster.</p>
+      </div>
+      <a routerLink="/register" class="btn-ink">Create account</a>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
+        <h2>Top rated</h2>
+        <a routerLink="/products" [queryParams]="{ sort: '-ratingsAverage' }">See more</a>
+      </div>
+      <div class="p-grid">
+        @if (loading()) {
+          @for (n of [1, 2, 3, 4, 5]; track n) {
+            <div class="p-card skeleton-card"></div>
+          }
+        } @else {
+          @for (p of topRated(); track p._id) {
+            <app-product-card [product]="p" />
+          }
+        }
+      </div>
+    </section>
+  }
+
+  @if (brands().length) {
+    <section class="block">
+      <div class="block-head">
+        <h2>Popular brands</h2>
+      </div>
+      <div class="brand-row">
+        @for (b of brands(); track b._id) {
+          <a [routerLink]="['/products']" [queryParams]="{ brand: b._id }" [title]="b.name">
+            <img [src]="b.image" [alt]="b.name" loading="lazy" />
+          </a>
+        }
+      </div>
+    </section>
+  }
+</div>

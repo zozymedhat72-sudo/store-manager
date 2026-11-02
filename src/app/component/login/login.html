@@ -1,0 +1,47 @@
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1>Sign in</h1>
+    <p class="text-muted">Welcome back. Enter your details to continue.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="email">Email</label>
+        <input id="email" type="email" class="form-control" formControlName="email" [class.is-invalid]="invalid('email')" autocomplete="email" />
+        @if (invalid('email')) {
+          <div class="invalid-feedback">Enter a valid email address.</div>
+        }
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label" for="password">Password</label>
+        <div class="pass-field">
+          <input id="password" [type]="showPassword() ? 'text' : 'password'" class="form-control" formControlName="password" [class.is-invalid]="invalid('password')" autocomplete="current-password" />
+          <button type="button" (click)="showPassword.set(!showPassword())" aria-label="Show password">
+            <i [class]="showPassword() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+        @if (invalid('password')) {
+          <div class="text-danger small mt-1">Password must be at least 6 characters.</div>
+        }
+      </div>
+
+      <div class="text-end mb-3">
+        <a routerLink="/forgot-password" class="small">Forgot your password?</a>
+      </div>
+
+      @if (error()) {
+        <div class="alert alert-danger py-2">{{ error() }}</div>
+      }
+
+      <button type="submit" class="btn-brand w-100" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner-border spinner-border-sm"></span>
+        } @else {
+          Sign in
+        }
+      </button>
+    </form>
+
+    <p class="auth-switch">New here? <a routerLink="/register">Create an account</a></p>
+  </div>
+</div>
