@@ -1,0 +1,1 @@
+import{Nt as tr}from"./chunk-C9I8b42T.js";function t(r,e=`Something went wrong, please try again.`){return r instanceof tr?r.status===0?`Cannot reach the server. Check your connection.`:r.error?.message||r.error?.errors?.msg||e:e}export{t};
